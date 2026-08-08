@@ -1,0 +1,40 @@
+# Development overrides — use with:
+# docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# What this adds:
+#   - Go API and worker use Air (hot-reload) via source volume mounts
+#   - Frontend uses Vite dev server with HMR on port 5173 instead of nginx
+
+services:
+  api:
+    build:
+      context: ./backend
+      target: builder       # stop at build stage — skip the minimal prod image
+    volumes:
+      - ./backend:/app      # mount source for live reload
+    command: ["go", "run", "./cmd/"]
+    environment:
+      APP_ENV: development
+
+  worker:
+    build:
+      context: ./backend
+      target: builder
+    volumes:
+      - ./backend:/app
+    command: ["go", "run", "./cmd/worker/"]
+    environment:
+      APP_ENV: development
+
+  frontend:
+    build:
+      context: ./frontend
+      target: builder       # stop at builder stage — skip nginx
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+    ports:
+      - "5173:5173"         # expose Vite dev server instead of nginx on port 80
+    environment:
+      NODE_ENV: development

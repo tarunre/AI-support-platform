@@ -1,0 +1,1 @@
+# models directory — GORM model structs will live here (e.g. ticket.go, user.go)

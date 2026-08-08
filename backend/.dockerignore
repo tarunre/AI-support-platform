@@ -1,0 +1,17 @@
+# Build output
+bin/
+*.exe
+*.test
+*.prof
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Runtime storage (attachments, reports)
+storage/
+
+# Logs
+*.log
+tmp/

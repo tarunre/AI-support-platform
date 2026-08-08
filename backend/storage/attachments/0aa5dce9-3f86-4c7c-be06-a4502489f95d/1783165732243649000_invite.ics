@@ -1,0 +1,23 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:icalendar-ruby
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+DTSTAMP:20240307T051304Z
+UID:71c385e9-e64f-4787-b9ae-8805c2a5e3f1
+DTSTART;TZID=GMT:20240307T133000
+DTEND;TZID=GMT:20240307T143000
+DESCRIPTION:<p dir="ltr" style="line-height: 1.38\; margin-top: 0pt\; margi
+ n-bottom: 0pt\;"><span style="font-family: Arial\, sans-serif\;"><span sty
+ le="font-size: 14.6667px\; white-space-collapse: preserve\;">Are you aimin
+ g to crack the <strong>MAANG Software Development Engineer interview</stro
+ ng>? Look no further! Join us for an exclusive masterclass where <span sty
+ le="text-decoration: underline\;">Ravi Raj shares his firsthand interview 
+ experiences and invaluable insights into his journey from service based in
+ dustry to Amazon to Google.</span></span></span></p>\n<p dir="ltr" style="
+ line-height: 1.38\; margin-top: 0pt\; margin-bottom: 0pt\;">&nbsp\;</p>
+LOCATION:Online
+ORGANIZER;CN=Coding Ninjas:mailto:contact@codingninjas.com
+SUMMARY:MAANG interview experience by Google SDE3
+END:VEVENT
+END:VCALENDAR

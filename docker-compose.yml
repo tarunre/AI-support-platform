@@ -1,0 +1,114 @@
+services:
+  # ── PostgreSQL ────────────────────────────────────────────────────────────────
+  postgresql:
+    image: postgres:16-alpine
+    container_name: supportiq-postgresql
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: supportiq
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d supportiq"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks:
+      - app-network
+
+  # ── Redis ─────────────────────────────────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: supportiq-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - app-network
+
+  # ── API server (Go / Gin) ─────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: api
+    container_name: supportiq-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgresql:5432/supportiq?sslmode=disable
+      REDIS_URL: redis://redis:6379
+      WEBSOCKET_ORIGIN: ${WEBSOCKET_ORIGIN:-http://localhost:80}
+      APP_URL: ${APP_URL:-http://localhost:80}
+    volumes:
+      - app_storage:/app/storage
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # ── Background worker (Go) ────────────────────────────────────────────────────
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: worker_image
+    container_name: supportiq-worker
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgresql:5432/supportiq?sslmode=disable
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - app_storage:/app/storage
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # ── Frontend (React / nginx) ──────────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    container_name: supportiq-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+    networks:
+      - app-network
+
+volumes:
+  pg_data:
+    name: supportiq-pg-data
+  redis_data:
+    name: supportiq-redis-data
+  app_storage:
+    name: supportiq-app-storage
+
+networks:
+  app-network:
+    driver: bridge
