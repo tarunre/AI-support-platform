@@ -195,7 +195,6 @@ supportiq-ai-support-platform/
 │   ├── package.json
 │   └── vite.config.js
 │
-├── docs/
 ├── .github/
 │   └── workflows/
 │
@@ -204,7 +203,7 @@ supportiq-ai-support-platform/
 
 ---
 
-# ⚙️ Prerequisites
+# Prerequisites
 
 Install the following before running the project:
 
@@ -585,7 +584,7 @@ Resolve Ticket
 
 ---
 
-# 🔌 API
+# API
 
 The API uses RESTful endpoints under:
 
